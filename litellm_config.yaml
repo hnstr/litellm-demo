@@ -1,0 +1,25 @@
+model_list:
+  - model_name: o3-mini
+    litellm_params:
+      model: azure_ai/o3-mini
+      api_base: os.environ/AZURE_API_BASE
+      api_key: os.environ/AZURE_API_KEY
+      api_version: 2024-12-01-preview # [OPTIONAL] litellm uses the latest azure api_version by default
+
+general_settings:
+  master_key: sk-1234
+  database_url: "postgresql://litellm_user:litellm@host.docker.internal:5432/my_litellm_db"
+
+guardrails:
+  - guardrail_name: "custom-pre-guard"
+    litellm_params:
+      guardrail: custom_guardrail.myCustomGuardrail # 👈 Key change
+      mode: "pre_call" # runs async_pre_call_hook
+  - guardrail_name: "custom-during-guard"
+    litellm_params:
+      guardrail: custom_guardrail.myCustomGuardrail
+      mode: "during_call" # runs async_moderation_hook
+  - guardrail_name: "custom-post-guard"
+    litellm_params:
+      guardrail: custom_guardrail.myCustomGuardrail
+      mode: "post_call" # runs async_post_call_success_hook
