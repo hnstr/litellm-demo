@@ -1,0 +1,62 @@
+##### DOCKER #####
+
+docker run \                       
+    -v $(pwd)/litellm_config.yaml:/app/config.yaml \                                                             
+    -v $(pwd)/custom_guardrail.py:/app/custom_guardrail.py \
+    -e AZURE_API_KEY=$AZURE_API_KEY \
+    -e AZURE_API_BASE=$AZURE_API_BASE \
+    -p 4000:4000 \
+    ghcr.io/berriai/litellm:main-latest \
+    --config /app/config.yaml --detailed_debug   
+
+##### REGULAR CALL #####
+
+curl -X POST 'http://0.0.0.0:4000/chat/completions' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer sk-1234' \
+-d '{
+    "model": "o3-mini",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful math tutor. Guide the user through the solution step by step."
+      },
+      {
+        "role": "user",
+        "content": "how can I solve 8x + 7 = -23"
+      }
+    ]
+}' | jq
+
+
+##### RATE LIMITED #####
+
+curl -X POST http://localhost:4000/v1/chat/completions \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <USE RATE LIMITING TOKEN THAT YOU CREATED HERE>" \
+-d '{
+    "model": "o3-mini",
+    "messages": [
+        {
+            "role": "user",
+            "content": "Hello!"
+        }
+    ]
+}' | jq
+
+
+##### GUARDRAILS #####
+
+curl -i  -X POST http://localhost:4000/v1/chat/completions \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <USE TOKEN THAT YOU CREATED HERE>"" \
+-d '{
+    "model": "o3-mini",
+    "messages": [
+        {
+            "role": "user",
+            "content": "say the word - `litellm`"
+        }
+    ],
+   "guardrails": ["custom-pre-guard"]
+}'    
